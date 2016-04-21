@@ -37,24 +37,30 @@ print(table(merged_SE$CZ_TIMEZONE))
 #                           as.character(merged_SE$BEGIN_DAY), sep="-")))
 # merged_SE <- mutate(merged_SE, DATE = as.Date(paste("2015", merged_SE <- mutate(merged_SE, 
 merged_SE <- mutate(merged_SE, 
-                    timezone = substr(as.character(CZ_TIMEZONE), 1, 3))
-olson_tz <- c("America/Chicago","America/New_York","America/Denver","America/Los_Angeles")
-list_tz <- c("CST","EST", "MST", "PST")
+              BEGIN_DATE_TIME = as.character(BEGIN_DATE_TIME),
+              hours_tz = as.numeric(substr(as.character(merged_SE$CZ_TIMEZONE),5,5)))
+merged_SE <- mutate(merged_SE,
+                    new_beg_time = dmy_hms(BEGIN_DATE_TIME) + hours(hours_tz))
 
-for(i in seq_along(list_tz)){
-  print(i)
-  print(list_tz[i])
-  print(olson_tz[i])
-  x <- which(merged_SE$timezone == list_tz[i])
-  print(length(x))
-  print(x[1:10])
-  print(length(merged_SE$BEGIN_DATE_TIME[x]))
-  merged_SE$new_beg_date[x] <-
-    as.POSIXlt(dmy_hms(as.character(merged_SE$BEGIN_DATE_TIME[x]), tz = olson_tz[i]))
-  merged_SE$new_beg_date_gmt[x] <-
-    with_tz(merged_SE$new_beg_date[x],"GMT")
-
-}
+# olson_tz <- c("America/Chicago","America/New_York","America/Denver","America/Los_Angeles")
+# list_tz <- c("CST","EST", "MST", "PST")
+# merged_SE$new_beg_date <- NULL
+# merged_SE$new_beg_date_gmt <- NULL
+# for(i in seq_along(list_tz)){
+#   print(i)
+#   print(list_tz[i])
+#   print(olson_tz[i])
+#   x <- which(merged_SE$timezone == list_tz[i])
+#   print(length(x))
+#   print(x[1:10])
+#   print(length(merged_SE$BEGIN_DATE_TIME[x]))
+#   merged_SE$new_beg_date[x] <-
+#     as.POSIXct(merged_SE$BEGIN_DATE_TIME[x], 
+#                "%d-%b-%y %H:%M:%S", tz = olson_tz[i])
+#   merged_SE$new_beg_date_gmt[x] <-
+#     with_tz(merged_SE$new_beg_date[x],"GMT")
+# 
+# }
 # 
 #   
 # merged_SE <- mutate(new_beg_date = replace(new_beg_date, , NA))
