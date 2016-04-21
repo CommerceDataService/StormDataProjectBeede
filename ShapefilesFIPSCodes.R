@@ -31,14 +31,16 @@ shp <- shape_direct(url="http://www2.census.gov/geo/tiger/GENZ2014/shp/cb_2014_u
                     shp= "cb_2014_us_county_20m")
 
 # In addition, we’re going to pull in a reference table that links Federal Information 
-# Processing System (FIPS) codes that contain numeric identifiers for states. This’ll 
-# be useful for clearly indicating in plain language which counties are in a given state.
-
+# Processing System (FIPS) codes that contain numeric identifiers for 
+# states. This’ll be useful for clearly indicating in plain language which counties 
+# are in a given state.  
+# fips <- read.delim("http://www2.census.gov/geo/docs/reference/codes/national_county.txt"
+#                    ,sep=",")
+# fips$County.Name <- as.character(fips$County.Name) ##Convert county name to character
 fips <- read.delim("http://www2.census.gov/geo/docs/reference/state.txt",sep="|")
 fips <- fips[,c("STATE","STUSAB")]  ##Keep the FIPS code and state abbreviation
 fips$STATE <- as.numeric(fips$STATE) ##Convert FIPS code to numeric
 fips$STUSAB <- as.character(fips$STUSAB) ##Convert state name to character
-
 save(fips, file = "FipsCodes.rda")
 save(shp, file = "ShapeFileData.rda")     
 paste("Number of records in Hail data: ",nrow(raw),sep="")
