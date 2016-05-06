@@ -4,22 +4,22 @@ setwd("~/StormProject")
 library(dplyr)
 ##Placeholder file to collect results
 batched <- data.frame()
-for (year in 2015:2015) {
+for (year in 2011:2015) {
+  print(year)
   load(paste("DeDuplicateHailStormEventData_", year, ".rda", sep = ""))
   load(paste("DeDuplicateSWDIHailData_", year, ".rda", sep = ""))
+  
+  num_SE <- dim(merged_SE)[1]
+  print(paste("number of obs in SE =", num_SE, sep=" "))
   merge_SWDI_SE_all <- merge(singles, merged_SE, id = c("DATE", "LON", "LAT"), 
-                         all = TRUE)
+                         all.x = TRUE)
   merge_SWDI_SE_all$datayear <- year
-  for (var in c("inSE", "inSWDI", "mininjuries", "maxinjuries", "mindeaths",
-                "maxdeaths", "minproperty", "maxproperty", "mincrops", "maxcrops",
-                "minanydamage", "maxanydamage")) {
-    print(var)
-    paste("merge_SWDI_SE_all$",var,"[is.na(merge_SWDI_SE_all$", var, ")] <- 0", 
-          sep="")
-  }
+  merge_SWDI_SE_all[is.na(merge_SWDI_SE_all)] <- 0
+
   print("freq table for whether obs is in SWDI, SE, or both")
   print(table(merge_SWDI_SE_all$inSWDI, merge_SWDI_SE_all$inSE))
-  
+  num_SE_matched <- sum(merge_SWDI_SE_all$inSE)
+  print(paste("match rate for SE data = ", num_SE_matched/num_SE, sep=""))
   x <- merge_SWDI_SE_all[merge_SWDI_SE_all$inSE==1 & merge_SWDI_SE_all$inSWDI == 1,]
   print("summary maxSEVPROB if in both SWDI and SE")
   print(summary(x$maxSEVPROB))
@@ -35,8 +35,6 @@ for (year in 2015:2015) {
 save(batched, file = "SWDI_SE_merge_2011_2015.rda")
 print("frequency table by year")
 print(table(batched$datayear))
-#merge_SWDI_SE_all <- arrange(merge_SWDI_SE_all, DATE, LON, LAT, desc(inSE))
-# merge_SWDI_SE$maxanydamage[is.na(merge_SWDI_SE$maxanydamage)] <- 0
-# print(table(merge_SWDI_SE$inSWDI))
-# print(table(merge_SWDI_SE$inSE))
-# print(table(merge_SWDI_SE$maxanydamage))
+print(table(batched$maxanydamage))
+print(paste("share of obs with any damage = ", 
+            (sum(batched$maxanydamage)/dim(batched[1])), sep = ""))
